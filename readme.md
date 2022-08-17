@@ -6,3 +6,6 @@ git subtree add --prefix tree-sitter-graphql https://github.com/bkegley/tree-sit
 
 #### sql
 git subtree add --prefix tree-sitter-sql https://github.com/m-novikov/tree-sitter-sql.git  main --squash
+
+#### rust
+git subtree add --prefix tree-sitter-rust https://github.com/tree-sitter/tree-sitter-rust.git master --squash
