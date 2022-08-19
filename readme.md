@@ -9,3 +9,6 @@ git subtree add --prefix tree-sitter-sql https://github.com/m-novikov/tree-sitte
 
 #### rust
 git subtree add --prefix tree-sitter-rust https://github.com/tree-sitter/tree-sitter-rust.git master --squash
+
+#### json
+git subtree add --prefix tree-sitter-json https://github.com/tree-sitter/tree-sitter-json.git master --squash
