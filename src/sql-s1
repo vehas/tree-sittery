@@ -68,3 +68,19 @@
           (named_type
            (name)))))))))))
 
+
+(program
+ (statement 
+   (create_table 
+    (keyword_create) 
+    (keyword_table) 
+    (table_reference 
+     name: (identifier)) 
+    (column_definitions 
+     (column_definition 
+      name: (identifier) 
+      type: (keyword_int)) 
+     (column_definition 
+      name: (identifier) 
+      type: (keyword_int))))) 
+ (statement (create_table (keyword_create) (keyword_table) (table_reference name: (identifier)) (column_definitions (column_definition name: (identifier) type: (keyword_int)) (column_definition name: (identifier) type: (keyword_int))))))

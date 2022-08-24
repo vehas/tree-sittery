@@ -3,69 +3,70 @@ use std::collections::HashMap;
 use tree_sitter::{Language, Parser, Query, QueryCapture, QueryCursor};
 use strfmt::strfmt;
 use anyhow::Error;
+use itertools::Itertools;
 
-extern "C" {
-    fn tree_sitter_graphql() -> Language;
-}
+// extern "C" {
+//     fn tree_sitter_graphql() -> Language;
+// }
 extern "C" {
     fn tree_sitter_sql() -> Language;
 }
-extern "C" {
-    fn tree_sitter_rust() -> Language;
-}
+// extern "C" {
+//     fn tree_sitter_rust() -> Language;
+// }
 fn main() {
     println!("Hello, world!");
 }
 
-#[test]
-fn test_gql_parser() {
-    let gql_lang = unsafe { tree_sitter_graphql() };
-    let mut gql_parser = Parser::new();
-    gql_parser.set_language(gql_lang).unwrap();
+// #[test]
+// fn test_gql_parser() {
+//     let gql_lang = unsafe { tree_sitter_graphql() };
+//     let mut gql_parser = Parser::new();
+//     gql_parser.set_language(gql_lang).unwrap();
 
-    let source_code = r#"type aaaa{b: int @directive(a: "{{{}"), c: int, d: float} type bbb{b: int, c: int}"#;
-    let gql_tree = gql_parser.parse(source_code, None).unwrap();
+//     let source_code = r#"type aaaa{b: int @directive(a: "{{{}"), c: int, d: float} type bbb{b: int, c: int}"#;
+//     let gql_tree = gql_parser.parse(source_code, None).unwrap();
 
-    println!("{:?}", gql_tree.root_node().to_sexp());
+//     println!("{:?}", gql_tree.root_node().to_sexp());
 
-    let query = Query::new(
-        gql_lang,
-        r#"
-        (object_type_definition
-           (name) @tname
-           (fields_definition
-                (
-                    (field_definition
-                        (name) @nn
-                        (type) @t
-                    )
-                    (comma)?
-                )*
-           )
-        )"#,
-    );
-    let mut cursor = QueryCursor::new();
-    let matchs = cursor
-        .matches(
-            &(query.unwrap()),
-            gql_tree.root_node(),
-            source_code.as_bytes(),
-        )
-        .map(|m| (m.pattern_index, m.captures.to_owned()))
-        .collect::<Vec<(usize, Vec<QueryCapture>)>>();
-    for (_q, qc) in matchs {
-        for q in qc {
-            println!(
-                "{:?} {:?} {:?} {:?}",
-                q.node.to_sexp(),
-                q.node.start_byte(),
-                q.node.end_byte(),
-                &source_code[q.node.start_byte()..q.node.end_byte()]
-            );
-        }
-        println!("--------------------------------")
-    }
-}
+//     let query = Query::new(
+//         gql_lang,
+//         r#"
+//         (object_type_definition
+//            (name) @tname
+//            (fields_definition
+//                 (
+//                     (field_definition
+//                         (name) @nn
+//                         (type) @t
+//                     )
+//                     (comma)?
+//                 )*
+//            )
+//         )"#,
+//     );
+//     let mut cursor = QueryCursor::new();
+//     let matchs = cursor
+//         .matches(
+//             &(query.unwrap()),
+//             gql_tree.root_node(),
+//             source_code.as_bytes(),
+//         )
+//         .map(|m| (m.pattern_index, m.captures.to_owned()))
+//         .collect::<Vec<(usize, Vec<QueryCapture>)>>();
+//     for (_q, qc) in matchs {
+//         for q in qc {
+//             println!(
+//                 "{:?} {:?} {:?} {:?}",
+//                 q.node.to_sexp(),
+//                 q.node.start_byte(),
+//                 q.node.end_byte(),
+//                 &source_code[q.node.start_byte()..q.node.end_byte()]
+//             );
+//         }
+//         println!("--------------------------------")
+//     }
+// }
 
 struct Attr{
     name: String,
@@ -109,18 +110,22 @@ fn test_sql_parser() -> Result<(), Error>{
     let query = Query::new(
         sql_lang,
         r#"
-        (create_table_statement
-            (identifier) @table_name
-            (table_parameters
+        (create_table 
+            (_)*
+            (table_reference 
+                name: (identifier) @name
+            ) 
+            (column_definitions 
                 (
-                    (table_column
-                        name: (identifier) @name
-                        type: (type) @type
-                    )+
+                    (column_definition 
+                        name: (identifier) @attr_name
+                        type: (keyword_int) @attr_type
+                    )
                     _*
                 )+
             )
-        )"#,
+        )
+        "#,
     );
     let mut cursor = QueryCursor::new();
     let matchs = cursor
@@ -138,16 +143,20 @@ fn test_sql_parser() -> Result<(), Error>{
         let mut qnext = qc.iter();
         let qn = qnext.next().expect("table should have name").node;
         let qname = qn;
-        let mut table = Table {
+        let table = Table {
             name: source_code[qname.start_byte()..qname.end_byte()].to_owned(),
             attrs: &vec![] } ;
-        for q in qnext {
+        for nn in &qnext.chunks(2) {
+            let mut ni = nn.into_iter();
+            let name_node = ni.next().expect("");
+            let type_node = ni.next().expect("");
             println!(
-                "{:?} {:?} {:?} {:?}",
-                q.node.to_sexp(),
-                q.node.start_byte(),
-                q.node.end_byte(),
-                &source_code[q.node.start_byte()..q.node.end_byte()]
+                "{:?} {:?}",
+                // q.node.to_sexp(),
+                // q.node.start_byte(),
+                // q.node.end_byte(),
+                &source_code[name_node.node.start_byte()..name_node.node.end_byte()],
+                &source_code[type_node.node.start_byte()..type_node.node.end_byte()]
             );
         }
         println!("code gen {}", codegen(table, "".to_string()));
@@ -158,53 +167,54 @@ fn test_sql_parser() -> Result<(), Error>{
 }
 
 
-#[test]
-fn test_rust_parser() {
-    let rust_lang = unsafe { tree_sitter_rust() };
-    let mut rust_parser = Parser::new();
-    rust_parser.set_language(rust_lang).unwrap();
+// #[test]
+// fn test_rust_parser() {
+//     let rust_lang = unsafe { tree_sitter_rust() };
+//     let mut rust_parser = Parser::new();
+//     rust_parser.set_language(rust_lang).unwrap();
 
-    let source_code = "struct a{c: usize, b: usize}";
-    let rust_tree = rust_parser.parse(source_code, None).unwrap();
+//     let source_code = "struct a{c: usize, b: usize}";
+//     let rust_tree = rust_parser.parse(source_code, None).unwrap();
 
-    println!("{:?}", rust_tree.root_node().to_sexp());
+//     println!("{:?}", rust_tree.root_node().to_sexp());
 
-    let query = Query::new(
-        rust_lang,
-        r#"
-        (struct_item
-            name: (type_identifier) @struct_name
-            body: (field_declaration_list 
-                        (
-                            (field_declaration 
-                                name: (field_identifier) @name
-                                type: (primitive_type) @type
-                            )
-                            _*
-                        )+
-                  )
-        )
-        "#,
-    );
-    let mut cursor = QueryCursor::new();
-    let matchs = cursor
-        .matches(
-            &(query.unwrap()),
-            rust_tree.root_node(),
-            source_code.as_bytes(),
-        )
-        .map(|m| (m.pattern_index, m.captures.to_owned()))
-        .collect::<Vec<(usize, Vec<QueryCapture>)>>();
-    for (_q, qc) in matchs {
-        for q in qc {
-            println!(
-                "{:?} {:?} {:?} {:?}",
-                q.node.to_sexp(),
-                q.node.start_byte(),
-                q.node.end_byte(),
-                &source_code[q.node.start_byte()..q.node.end_byte()]
-            );
-        }
-        println!("--------------------------------")
-    }
-}
+//     let query = Query::new(
+//         rust_lang,
+//         r#"
+//         (struct_item
+//             name: (type_identifier) @struct_name
+//             body: (field_declaration_list 
+//                         (
+//                             (field_declaration 
+//                                 name: (field_identifier) @name
+//                                 type: (primitive_type) @type
+//                             )
+//                             _*
+//                         )+
+//                   )
+//         )
+//         "#,
+//     );
+//     let mut cursor = QueryCursor::new();
+//     let matchs = cursor
+//         .matches(
+//             &(query.unwrap()),
+//             rust_tree.root_node(),
+//             source_code.as_bytes(),
+//         )
+//         .map(|m| (m.pattern_index, m.captures.to_owned()))
+//         .collect::<Vec<(usize, Vec<QueryCapture>)>>();
+//     for (_q, qc) in matchs {
+//         for q in qc {
+//             println!(
+//                 "{:?} {:?} {:?} {:?}",
+//                 q.node.to_sexp(),
+//                 q.node.start_byte(),
+//                 q.node.end_byte(),
+//                 &source_code[q.node.start_byte()..q.node.end_byte()]
+//             );
+//         }
+//         println!("--------------------------------")
+//     }
+// }
+

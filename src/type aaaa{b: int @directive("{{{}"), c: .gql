@@ -1,0 +1,1 @@
+type aaaa{b: int @directive("{{{}"), c: int} type bbb{b: int, c: int}
