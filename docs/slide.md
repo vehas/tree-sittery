@@ -9,9 +9,8 @@ class:
 # incremental parsing with tree-sitter
 
 veha suwatphisankij
-github.com/vehas
-fb.com/vehas
-all code include this presentation is on https://github.com/vehas/tree-sittery
+slide: https://vehas.github.io/tree-sittery
+
 
 ---
 
@@ -74,13 +73,7 @@ $ tree-sitter -> 16 ms then -> 1 ms
   - code search
   - vulnerability check
   - code visualization
-  - data pipeline
-  - rust 
-  macro
-
-
-
-"type {name} {{{{\n{{body}}\n }}}}";
+  - rust macro
 ---
 
 # use parser
@@ -153,7 +146,7 @@ create table student(
 ```
 ---
 
-query result
+# query result
 
 name -> student
 attr_name -> age, height
@@ -244,3 +237,5 @@ module.exports = grammar({
 
 # thank you
 ## Q & A
+
+all code include this presentation is on https://github.com/vehas/tree-sittery
