@@ -11,9 +11,7 @@ strfmt = "0.2.2"
 anyhow = "1.0.62"
 # wasm-bindgen = "0.2"
 itertools = "0.10.3"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
+phf = { version = "0.11.1", features = ["macros"] }
 
 [build-dependencies]
 cc = "1.0.73"

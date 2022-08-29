@@ -41,10 +41,10 @@ data structure:
 [comment]: # (       D --> E[3]  )
 
 ---
-# incremental parser
+# incremental parser (tree sitter)
 #### parse faster the next time you parse almost the same thing
   - realtime interactive text editor
-    - neovim
+    - neovim (https://neovim.io/doc/treesitter/)
     - helix
     - code mirror (lezer)
   - github (small change in commit)
@@ -64,6 +64,11 @@ data structure:
   - vulnerability check
   - code visualization
   - data pipeline
+  - rust macro
+---
+
+regular expressions vs LR(1) parser
+
 ---
 
 # use parser
@@ -73,8 +78,9 @@ AST + visitor pattern -> useful AST
 
 ---
 ## project
-# graphql <-> sql <-> rust <-> mermaid
+### graphql <-> sql <-> rust <-> mermaid
 
+# sql -> graphql
 ---
 # use parser
 ## build from C
