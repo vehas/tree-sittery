@@ -1,0 +1,5 @@
+type student {
+    age: Int, 
+    height: Int, 
+    friend_count: Int, 
+ }

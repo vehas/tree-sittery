@@ -84,8 +84,11 @@ AST + visitor pattern -> useful AST
 ---
 ## project
 
-## sql -> graphql
-## rust -> graphql
+## sql -> graphql <- rust
+
+
+![width:1000px](3file.png)
+
 ---
 # use parser
 ## build from C
