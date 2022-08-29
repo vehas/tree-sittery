@@ -8,18 +8,26 @@ class:
 
 # incremental parsing with tree-sitter
 
-veha suwat
+veha suwatphisankij
 github.com/vehas
 fb.com/vehas
+all code include this presentation is on https://github.com/vehas/tree-sittery
 
 ---
 
 # why ?
+xkcd.com/comics/tasks.png
+![bg right:40% 80%](https://imgs.xkcd.com/comics/tasks.png)
 
+---
+# today goal, on Parser
+## 1. what is it
+## 2. how to play with it
+## 3. how to make a new one
 ---
 
 # what is parser
-#### program that given structured text, formal grammar turn data structure
+#### program that given structured text, formal grammar turn to data structure
 ## text + grammar -> data structure
 ---
 
@@ -28,12 +36,6 @@ grammar       : root -> num (ops num)+
 data structure: 
 ![bg right:40% 80%](ds-node.svg)
 
-[comment]: # (graph TD           )
-[comment]: # (   R[Root] --> A[1])
-[comment]: # (       R --> B[*]  )
-[comment]: # (       B --> C[2]  )
-[comment]: # (       R --> D[+]  )
-[comment]: # (       D --> E[3]  )
 
 ---
 # incremental parser (tree sitter)
@@ -191,15 +193,46 @@ https://github.com/mermaid-js/mermaid/blob/develop/src/diagrams/er/parser/erDiag
 
 ---
 
-# show mermaid result
+# test first : mermaid example, result
 
+```lisp
+erDiagram
+  student {
+    int age
+    int height
+  }
+(er_digram
+  (statement
+    (identifier)
+    (attributes
+      (attribute
+        (identifier)
+        (identifier))
+      (attribute
+        (identifier)
+        (identifier)))))
+```
 ---
 
-# test first
-
----
-
-## fun
+## parser
+```js
+module.exports = grammar({
+    name: 'er_mermaid',
+    rules: {
+        er_digram: $ => seq('erDiagram', repeat($.statement)),
+        statement: $ => choice(
+            $.identifier, seq($.identifier, $.attributes),
+        ),
+        attributes: $ => seq(
+            '{', repeat($.attribute), '}'
+        ),
+        attribute: $ => seq(
+            field('type', $.identifier),
+            field('name', $.identifier)
+        ),
+        identifier: _ => /([a-zA-Z_][0-9a-zA-Z_]*)/
+    }});
+```
 
 ---
 

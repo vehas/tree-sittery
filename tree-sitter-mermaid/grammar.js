@@ -1,8 +1,7 @@
 module.exports = grammar({
     name: 'er_mermaid',
-
     rules: {
-        er_digram: $ => prec(1, seq('erDiagram', repeat($.statement))),
+        er_digram: $ => seq('erDiagram', repeat($.statement)),
         statement: $ => choice(
             $.identifier,
             seq($.identifier, $.attributes),

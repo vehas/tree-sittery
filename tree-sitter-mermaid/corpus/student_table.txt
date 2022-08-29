@@ -1,0 +1,22 @@
+==================
+er with only table names
+==================
+
+erDiagram
+  student {
+    int age
+    int height
+  }
+
+---
+
+(er_digram
+      (statement
+        (identifier)
+        (attributes
+          (attribute
+            (identifier)
+            (identifier))
+          (attribute
+            (identifier)
+            (identifier)))))

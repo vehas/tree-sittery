@@ -2,24 +2,20 @@
   "name": "er_mermaid",
   "rules": {
     "er_digram": {
-      "type": "PREC",
-      "value": 1,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "erDiagram"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "statement"
-            }
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "erDiagram"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "statement"
           }
-        ]
-      }
+        }
+      ]
     },
     "statement": {
       "type": "CHOICE",
