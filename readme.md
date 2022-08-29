@@ -1,4 +1,7 @@
 # tree sittery
+
+
+## slide is on /docs
 tree sitter use case & parsing for fun
 ### add tree sitter modules
 #### graphql
