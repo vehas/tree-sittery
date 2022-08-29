@@ -1,0 +1,11 @@
+==================
+er with only table names
+==================
+erDiagram
+ table1
+
+---
+
+(er_digram
+  (statement
+    (identifier)))

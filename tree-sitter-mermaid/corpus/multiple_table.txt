@@ -1,0 +1,23 @@
+==================
+table with attr
+==================
+erDiagram
+ table1
+ table2 {
+  int attr
+  int attr2
+ }
+
+---
+    (er_digram
+      (statement
+        (identifier))
+      (statement
+        (identifier)
+        (attributes
+          (attribute
+            (identifier)
+            (identifier))
+          (attribute
+            (identifier)
+            (identifier)))))

@@ -189,6 +189,7 @@ static SQL_SOURCE_CODE: &str =
         height int,
         friend_count int);
       create table b(b int, c int);"#;
+
 static SQL_QUERY: &str = 
     r#"
     (create_table 
@@ -228,26 +229,30 @@ fn test_sql_to_graphql() -> Result<(), Error>{
     parse_then_gen_code(pg)
 }
 
+
+static RUST_QUERY: &str = 
+r#"
+(struct_item
+    name: (type_identifier) @struct_name
+    body: (field_declaration_list 
+                (
+                    (field_declaration 
+                        name: (field_identifier) @name
+                        type: (primitive_type) @type
+                    )
+                    _*
+                )+
+          )
+)
+"#;
+
 #[test]
 fn test_rust_to_graphql() -> Result<(), Error>{
     let parse_gen = ParseGen{
         from_lang: "rust".to_string(),
         lang: unsafe { tree_sitter_rust() },
         code: "struct a{c: usize, b: usize}".to_string(),
-        query: r#"
-        (struct_item
-            name: (type_identifier) @struct_name
-            body: (field_declaration_list 
-                        (
-                            (field_declaration 
-                                name: (field_identifier) @name
-                                type: (primitive_type) @type
-                            )
-                            _*
-                        )+
-                  )
-        )
-        "#.to_string(),
+        query: RUST_QUERY.to_string(),
         to_lang: "graphql".to_string() };
     parse_then_gen_code(parse_gen)
 }
